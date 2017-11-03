@@ -1,0 +1,25 @@
+From cfeefdf3d31c60e679f82eebef346e358e7a91bf Mon Sep 17 00:00:00 2001
+From: Laurent Guillier <laurent.guillier@smile.fr>
+Date: Thu, 2 Nov 2017 14:30:26 +0000
+Subject: [PATCH 1/2] CONFIG_SYS_FSL_USDHC_NUM set to 2 instead of 3
+
+---
+ include/configs/embestmx6boards.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/embestmx6boards.h b/include/configs/embestmx6boards.h
+index aed9666..4b9c804 100644
+--- a/include/configs/embestmx6boards.h
++++ b/include/configs/embestmx6boards.h
+@@ -101,7 +101,7 @@
+ #if defined(CONFIG_ENV_IS_IN_MMC)
+ /* RiOTboard */
+ #define CONFIG_FDTFILE	"imx6dl-riotboard.dtb"
+ #define CONFIG_SYS_FSL_USDHC_NUM	3
+-#define CONFIG_SYS_MMC_ENV_DEV		0	/* SDHC2 */
++#define CONFIG_SYS_MMC_ENV_DEV		2	/* SDHC2 */ 
+ #define CONFIG_ENV_OFFSET		(6 * 64 * 1024)
+ #define CONFIG_SUPPORT_EMMC_BOOT /* eMMC specific */
+-- 
+2.9.3
+

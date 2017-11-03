@@ -1,0 +1,25 @@
+#! /bin/sh
+
+# Script responsible to launch the RAUC Hawkbit client
+# It use a default config file (/etc/rauc-hawkbit.cfg) in which the board id and the mac addr are changed according to the board
+
+DAEMON=/usr/bin/rauc-hawkbit-client
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Get mac addr of the eth0 interface and construct an uid with it
+mac=$(echo $(ip addr show eth0 | grep link/ | awk '{ print $2}'))
+uid=riot_$mac
+
+# Replace default uid with current one
+grep -l 'target_name = *' /etc/rauc-hawkbit.cfg | xargs sed -i "s/test-target/$uid/"
+
+# Replace default mac addr with current one
+grep -l 'mac_address = *' /etc/rauc-hawkbit.cfg | xargs sed -i "s/ff:ff:ff:ff:ff:ff/$mac/"
+
+cd
+echo "Starting $DAEMON ..."
+exec $DAEMON -c /etc/rauc-hawkbit.cfg &
+exit 0
+

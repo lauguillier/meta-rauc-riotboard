@@ -1,0 +1,11 @@
+[Unit]
+Description=rauc-hawkbit
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/rauc-hawkbit
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
