@@ -2,7 +2,7 @@ DESCRIPTION = "Rauc bundle generator"
 SECTION = ""
 DEPENDS = ""
 
-inherit rauc-sdimg
+inherit image_types_rauc
 inherit bundle
 
 # RAUC_BUNDLE_COMPATIBLE
