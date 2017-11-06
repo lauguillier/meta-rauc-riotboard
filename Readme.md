@@ -38,6 +38,12 @@ Les étapes suivantes sont nécessaires pour implémenter Rauc sur riotboard :
       IMAGE_BOOT_FILES_append = " boot.scr u-boot.bin;${SDIMG_KERNELIMAGE}"
       IMAGE_INSTALL_append = " kernel-image kernel-devicetree"
 
+* Les lignes suivantese doivent être ajoutées au bblayers.conf :
+
+      ${TOPDIR}/meta-homeassistant \
+      ${TOPDIR}/meta-hello \
+      ${TOPDIR}/meta-rauc-riotboard \
+      ${TOPDIR}/meta-rauc \
 
 * lancer la génération de l'image avec
 
