@@ -34,7 +34,7 @@ Les étapes suivantes sont nécessaires pour implémenter Rauc sur riotboard :
       VIRTUAL-RUNTIME_initscripts = ""
       IMAGE_INSTALL_append  = " hello nano"
       IMAGE_FEATURES_append = " ssh-server-dropbear"
-      IMAGE_INSTALL_append = " u-boot-fw-utils"
+      IMAGE_INSTALL_append = " u-boot-fw-utils riotboard-u-boot-scr"
       IMAGE_BOOT_FILES_append = " boot.scr u-boot.bin;${SDIMG_KERNELIMAGE}"
       IMAGE_INSTALL_append = " kernel-image kernel-devicetree"
 

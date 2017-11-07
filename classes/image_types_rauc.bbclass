@@ -152,14 +152,15 @@ _generate_boot_image() {
 #                                                     Default Free space = 1.3x
 #                                                     Use IMAGE_OVERHEAD_FACTOR to add more space
 #                                                     <--------->
-#            4MiB               8MiB           SDIMG_ROOTFS                    4MiB                              4MiB
-# <-----------------------> <----------> <----------------------> <------------------------------> <------------------------------>
-#  ------------------------ ------------ ------------------------ ------------------------------- -------------------------------
-# | IMAGE_ROOTFS_ALIGNMENT | BOOT_SPACE | ROOTFS_SIZE            |     IMAGE_ROOTFS_ALIGNMENT    |     IMAGE_ROOTFS_ALIGNMENT    |
-#  ------------------------ ------------ ------------------------ ------------------------------- -------------------------------
-# ^                        ^            ^                        ^                               ^                               ^
-# |                        |            |                        |                               |                               |
-# 0                      4096     4MiB +  8MiB       4MiB +  8Mib + SDIMG_ROOTFS   4MiB +  8MiB + SDIMG_ROOTFS + 4MiB   4MiB +  8MiB + SDIMG_ROOTFS + 8MiB
+#            4MiB               8MiB           SDIMG_ROOTFS                    4MiB                      SDIMG_ROOTFS                     4MiB
+# <-----------------------> <----------> <----------------------> <------------------------------> <---------------------> <------------------------------>
+#  ------------------------ ------------ ------------------------ ------------------------------- ------------------------ -------------------------------
+# | IMAGE_ROOTFS_ALIGNMENT | BOOT_SPACE | ROOTFS_SIZE            |     IMAGE_ROOTFS_ALIGNMENT    | ROOTFS_SIZE            |     IMAGE_ROOTFS_ALIGNMENT    |
+#  ------------------------ ------------ ------------------------ ------------------------------- ------------------------ -------------------------------
+# ^                        ^            ^                        ^                               ^                        ^
+# |                        |            |                        |                               |                        |
+# 0                      4096     4MiB +  8MiB       4MiB +  8Mib + SDIMG_ROOTFS                 |               4MiB +  8MiB + 2 * SDIMG_ROOTFS + 8MiB
+#                                                                                4MiB + 8MiB + SDIMG_ROOTFS + 4MiB
 generate_imx_rauc_sdcard () {
 	echo 'Entering generate_imx_rauc_sdcard'
 	echo 'generate_imx_rauc_sdcard: starting parted'
@@ -170,10 +171,14 @@ generate_imx_rauc_sdcard () {
 	echo parted -s ${SDCARD} unit KiB mkpart primary fat32 ${IMAGE_ROOTFS_ALIGNMENT} $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
 	parted -s ${SDCARD} unit KiB mkpart primary fat32 ${IMAGE_ROOTFS_ALIGNMENT} $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
 	echo 'generate_imx_rauc_sdcard: part 2 done'
-	echo parted -s ${SDCARD} unit KiB mkpart primary $(expr  ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
-	parted -s ${SDCARD} unit KiB mkpart primary $(expr  ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE )
+	echo parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ ${ROOTFS_SIZE})
+	parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ ${ROOTFS_SIZE})
 	echo 'generate_imx_rauc_sdcard: part 3 done'
-	parted ${SDCARD} print
+	echo parted -s ${SDCARD} unit KiB mkpart primary $(expr  ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ ${ROOTFS_SIZE}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ ${ROOTFS_SIZE} \+ ${ROOTFS_SIZE})
+	parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ ${ROOTFS_SIZE}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ ${ROOTFS_SIZE} \+ ${ROOTFS_SIZE})
+	echo 'generate_imx_rauc_sdcard: part 4 done'
+
+	parted ${SDCARD} unit MiB print
 	echo 'generate_imx_rauc_sdcard: finished parted'
 
 	# Burn bootloader
@@ -212,10 +217,13 @@ generate_imx_rauc_sdcard () {
 	# Burn Partition
 	echo dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
 	dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-	echo dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${BOOT_SPACE_ALIGNED} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${BOOT_SPACE_ALIGNED} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-	echo dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${BOOT_SPACE_ALIGNED} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 \* 2)
-	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${BOOT_SPACE_ALIGNED} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 \* 2)
+	
+	echo dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024)
+	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024)
+	
+	echo dd if=/dev/null of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${IMAGE_ROOTFS_SIZE} \* 1024) ibs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
+	dd if=/dev/null of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${IMAGE_ROOTFS_SIZE} \* 1024) ibs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
+	
 	echo 'Leaving generate_imx_rauc_sdcard'
 }
 
