@@ -22,7 +22,9 @@ Les étapes suivantes sont nécessaires pour implémenter Rauc sur riotboard :
       git clone https://github.com/lauguillier/meta-test.git
 
 * Dans le local.conf, il faut ajouter les lignes suivantes :
-
+      # Set rootfs size to 256MiB
+      IMAGE_ROOTFS_SIZE = "262144"
+      IMAGE_OVERHEAD_FACTOR = "1.0"
       IMAGE_FSTYPES_append  = " ext4"
       #Add SD image format
       IMAGE_FSTYPES_append = " rauc-sdimg"
@@ -34,7 +36,7 @@ Les étapes suivantes sont nécessaires pour implémenter Rauc sur riotboard :
       VIRTUAL-RUNTIME_initscripts = ""
       IMAGE_INSTALL_append  = " hello nano"
       IMAGE_FEATURES_append = " ssh-server-dropbear"
-      IMAGE_INSTALL_append = " u-boot-fw-utils riotboard-u-boot-scr"
+      IMAGE_INSTALL_append = " u-boot-fw-utils"
       IMAGE_BOOT_FILES_append = " boot.scr u-boot.bin;${SDIMG_KERNELIMAGE}"
       IMAGE_INSTALL_append = " kernel-image kernel-devicetree"
 

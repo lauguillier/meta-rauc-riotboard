@@ -104,10 +104,12 @@ _generate_boot_image() {
 	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
 
 	# Copy boot scripts
+	echo Copy boot scripts
 	for item in ${BOOT_SCRIPTS}; do
 		src=`echo $item | awk -F':' '{ print $1 }'`
 		dst=`echo $item | awk -F':' '{ print $2 }'`
-
+		
+		echo mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/$src ::/$dst
 		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/$src ::/$dst
 	done
 
