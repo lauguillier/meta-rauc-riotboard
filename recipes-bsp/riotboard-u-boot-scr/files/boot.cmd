@@ -17,15 +17,15 @@ for BOOT_SLOT in "${BOOT_ORDER}"; do
     if test ${BOOT_A_LEFT} -gt 0; then
       setexpr BOOT_A_LEFT ${BOOT_A_LEFT} - 1
       echo "Found valid slot A, ${BOOT_A_LEFT} attempts remaining"
-      setenv custom_bootargs root=/dev/mmcblk1p1 rauc.slot=A
-      setenv BOOT_DEV "mmc 1:1"
+      setenv custom_bootargs root=/dev/mmcblk1p2 rauc.slot=A
+      setenv BOOT_DEV "mmc 1:2"
     fi
   elif test "x${BOOT_SLOT}" = "xB"; then
     if test ${BOOT_B_LEFT} -gt 0; then
       setexpr BOOT_B_LEFT ${BOOT_B_LEFT} - 1
       echo "Found valid slot B, ${BOOT_B_LEFT} attempts remaining"
-      setenv custom_bootargs root=/dev/mmcblk1p2 rauc.slot=B
-      setenv BOOT_DEV "mmc 1:2"
+      setenv custom_bootargs root=/dev/mmcblk1p3 rauc.slot=B
+      setenv BOOT_DEV "mmc 1:3"
     fi
   fi
 done

@@ -217,14 +217,14 @@ generate_imx_rauc_sdcard () {
 	_generate_boot_image 1
 
 	# Burn Partition
-	echo dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-	dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
+	echo dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc,fsync bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024) seek=1
+	dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc,fsync bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024) seek=1
 	
-	echo dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024)
-	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024)
+	echo dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync bs=1024 seek=$(expr ${IMAGE_ROOTFS_ALIGNMENT} + ${BOOT_SPACE_ALIGNED} )
+	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc,fsync bs=1024 seek=$(expr ${IMAGE_ROOTFS_ALIGNMENT} + ${BOOT_SPACE_ALIGNED})
 	
-	echo dd if=/dev/null of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${IMAGE_ROOTFS_SIZE} \* 1024) ibs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-	dd if=/dev/null of=${SDCARD} conv=notrunc,fsync seek=1 obs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${BOOT_SPACE} \* 1024 + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024 + ${IMAGE_ROOTFS_SIZE} \* 1024) ibs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
+	#echo dd if=/dev/null of=${SDCARD} conv=notrunc,fsync bs=1024 seek=$(expr${IMAGE_ROOTFS_ALIGNMENT}  + ${BOOT_SPACE_ALIGNED}  + ${IMAGE_ROOTFS_SIZE} )
+	#dd if=/dev/null of=${SDCARD} conv=notrunc,fsync bs=1024 seek=$(expr ${IMAGE_ROOTFS_ALIGNMENT}  + ${BOOT_SPACE_ALIGNED}  + ${IMAGE_ROOTFS_SIZE} )
 	
 	echo 'Leaving generate_imx_rauc_sdcard'
 }
