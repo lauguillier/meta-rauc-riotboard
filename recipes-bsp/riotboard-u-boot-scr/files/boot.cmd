@@ -41,6 +41,6 @@ else
   reset
 fi
 
-ext4load ${BOOT_DEV} ${loadaddr} zImage;
+ext4load ${BOOT_DEV} ${loadaddr} /boot/zImage;
 ext4load ${BOOT_DEV} ${fdt_addr_r} /boot/imx6dl-riotboard.dtb
-bootm ${loadaddr} - ${fdt_addr_r}
+bootz ${loadaddr} - ${fdt_addr_r}
