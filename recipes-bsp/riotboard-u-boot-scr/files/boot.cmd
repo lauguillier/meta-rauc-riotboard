@@ -1,4 +1,4 @@
-saveenv
+#saveenv
 fdt addr ${fdt_addr} && fdt get value bootargs /chosen bootargs
 
 echo "#### Start RAUC boot script" 
@@ -31,7 +31,8 @@ for BOOT_SLOT in "${BOOT_ORDER}"; do
 done
 
 if test -n "${custom_bootargs}"; then
-  setenv bootargs ${bootargs} ${custom_bootargs}
+  #setenv bootargs ${bootargs} ${custom_bootargs}
+  setenv bootargs console=ttymxc1,115200 ${custom_bootargs}
   saveenv
 else
   echo "No valid slot found, resetting tries to 3"

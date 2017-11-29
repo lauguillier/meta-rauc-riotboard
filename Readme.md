@@ -22,6 +22,7 @@ Les étapes suivantes sont nécessaires pour implémenter Rauc sur riotboard :
       git clone https://github.com/lauguillier/meta-test.git
 
 * Dans le local.conf, il faut ajouter les lignes suivantes :
+
       # Set rootfs size to 256MiB
       IMAGE_ROOTFS_SIZE = "262144"
       IMAGE_OVERHEAD_FACTOR = "1.0"
@@ -40,12 +41,14 @@ Les étapes suivantes sont nécessaires pour implémenter Rauc sur riotboard :
       IMAGE_BOOT_FILES_append = " boot.scr u-boot.bin;${SDIMG_KERNELIMAGE}"
       IMAGE_INSTALL_append = " kernel-image kernel-devicetree"
 
-* Les lignes suivantese doivent être ajoutées au bblayers.conf :
+* Les lignes suivantes doivent être ajoutées au bblayers.conf :
 
       ${TOPDIR}/meta-homeassistant \
       ${TOPDIR}/meta-hello \
       ${TOPDIR}/meta-rauc-riotboard \
       ${TOPDIR}/meta-rauc \
+
+* Le fichier meta-rauc-riotboard/recipes-core/rauc-hawkbit/files/rauc-hawkbit.cfg doit être adapté, notamment pour configurer l'adresse IP du serveur hawkbit
 
 * lancer la génération de l'image avec
 
